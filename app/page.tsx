@@ -1,52 +1,41 @@
 'use client';
+import Link from 'next/link';
+import { ArrowRight } from 'iconoir-react';
 
-import { useEffect, useRef } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import fragmentShader from './shaders/fragment.glsl';
-import vertexShader from './shaders/vertex.glsl';
-import * as THREE from 'three';
-import { useTweaks } from 'use-tweaks';
-
-function Shader(props: any) {
-  const shaderRef = useRef<THREE.ShaderMaterial | null>(null);
-  const { viewport } = useThree();
-  const { opacity } = useTweaks({
-    opacity: { value: 1, min: 0, max: 1, step: 0.05 },
-  });
-  useFrame((state) => {
-    if (shaderRef.current) {
-      shaderRef.current.uniforms.uTime.value += 0.01;
-      shaderRef.current.uniforms.uOpacity.value = opacity;
-      shaderRef.current.uniforms.uPointer.value = state.pointer;
-      // console.log(opacity);
-    }
-  });
-
-  return (
-    <mesh {...props}>
-      <planeGeometry args={[viewport.width, viewport.height, 10]} />
-      <shaderMaterial
-        ref={shaderRef}
-        fragmentShader={fragmentShader}
-        vertexShader={vertexShader}
-        uniforms={{
-          uTime: { value: 0.0 },
-          uPointer: { value: new THREE.Vector2(0.5, 0.5) },
-          uOpacity: { value: 0.0 },
-        }}
-      />
-    </mesh>
-  );
+interface Project {
+  title: string;
+  slug: string;
+  description?: string;
 }
 
 export default function Home() {
+  const projects = [
+    {
+      title: 'Arabella',
+      slug: 'arabella',
+      description: 'Distorting an image texture based on mouse movement',
+    },
+  ];
   return (
-    <main className="h-screen">
-      <Canvas orthographic>
-        <ambientLight intensity={Math.PI / 2} />
-        <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
-        <Shader props={{ position: [0, 0, 0] }} />
-      </Canvas>
+    <main className="h-screen bg-slate-100 flex flex-col items-center justify-center">
+      {projects.map((project: Project) => (
+        <Link
+          className="w-80 group px-4 py-3 rounded-md text-slate-700 hover:text-blue-500 flex flex-col gap-2 bg-white shadow-sm hover:shadow-md transition-all duration-300"
+          href={`/projects/${project.slug}`}
+          key={project.slug}
+        >
+          <div className="flex w-full justify-between">
+            <h2 className="text-xl">{project.title}</h2>
+            <ArrowRight
+              className="group-hover:translate-x-0.5 transform transition-transform duration-300"
+              color="currentColor"
+              width={'20px'}
+              strokeWidth={'2px'}
+            />
+          </div>
+          <p className="text-sm text-slate-500">{project.description}</p>
+        </Link>
+      ))}
     </main>
   );
 }
