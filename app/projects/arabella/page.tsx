@@ -5,8 +5,7 @@ import { Canvas, useFrame, useThree, useLoader } from '@react-three/fiber';
 import fragmentShader from './shaders/fragment.glsl';
 import vertexShader from './shaders/vertex.glsl';
 import * as THREE from 'three';
-import { CursorPointer } from 'iconoir-react';
-import { motion } from 'framer-motion';
+import { CursorPointer, OneFingerSelectHandGesture } from 'iconoir-react';
 
 function Shader(props: any) {
   const shaderRef = useRef<THREE.ShaderMaterial | null>(null);
@@ -16,14 +15,6 @@ function Shader(props: any) {
     if (shaderRef.current) {
       shaderRef.current.uniforms.uTime.value += 0.01;
       shaderRef.current.uniforms.uPointer.value = state.pointer;
-      shaderRef.current.uniforms.uOutputResolution.value.set(
-        viewport.width,
-        viewport.height
-      );
-      shaderRef.current.uniforms.uTextureResolution.value.set(
-        texture.image.width,
-        texture.image.height
-      );
     }
   });
 
@@ -52,8 +43,8 @@ function Shader(props: any) {
 
 export default function Home() {
   return (
-    <main className="h-screen flex bg-slate-100">
-      <div className="h-full w-1/2">
+    <main className="h-screen flex flex-col-reverse md:flex-row bg-slate-100">
+      <div className="h-full md:w-1/2">
         <Canvas orthographic>
           <ambientLight intensity={Math.PI / 2} />
           <pointLight
@@ -66,25 +57,20 @@ export default function Home() {
           </Suspense>
         </Canvas>
       </div>
-      <div className="h-full w-1/2 flex flex-col justify-between p-12">
-        <div className="overflow-hidden">
-          <motion.h1
-            className="text-9xl text-slate-800 font-light transform translate-y-full"
-            animate={{
-              y: ['120%', '0%'],
-              rotateZ: [6, 0],
-              transition: { duration: 0.5, easings: ['easeInOut'], delay: 0.5 },
-            }}
-          >
-            Arabella
-          </motion.h1>
-        </div>
+      <div className="h-full md:w-1/2 flex flex-col justify-between p-12">
+        <h1 className="text-6xl md:text-9xl text-slate-800 font-light">
+          Arabella
+        </h1>
+
         <div className="flex flex-col items-start gap-4">
           <div className="p-2 rounded-full bg-blue-500">
-            <CursorPointer className="text-blue-50" />
+            <CursorPointer className="text-blue-50 hidden md:flex" />
+            <OneFingerSelectHandGesture className="text-blue-50 flex md:hidden" />
           </div>
           <p className="text-slate-500">
-            Drag your mouse around the image to see the effect.
+            <span className="md:inline hidden">Drag your mouse</span>
+            <span className="inline md:hidden">Tap</span> around the image to
+            see the effect.
           </p>
         </div>
       </div>
